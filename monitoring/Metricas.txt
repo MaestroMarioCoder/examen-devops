@@ -1,0 +1,150 @@
+
+http://localhost:9090/graph
+
+MÉTRICAS DE Node Exporter
+
+node_cpu_seconds_total
+node_memory_MemAvailable_bytes
+node_load1
+node_load5
+node_load15
+node_network_receive_bytes_total
+node_disk_reads_completed_total
+
+
+MÉTRICAS de cAdvisor
+
+container_cpu_usage_seconds_total
+container_memory_usage_bytes
+container_fs_reads_bytes_total
+container_network_receive_bytes_total
+
+
+http://localhost:9090/targets
+
+
+
+Capítulo: Implementación del Sistema de Monitoreo con Prometheus y cAdvisor
+
+
+1. Introducción
+
+Como parte de los requisitos del proyecto final, se implementó un sistema de monitoreo básico para observar el comportamiento de los contenedores que forman la aplicación. El objetivo principal es contar con una herramienta capaz de mostrar métricas del servidor, consumo de recursos y estado general de los servicios durante su ejecución.
+
+Para cumplir con esto se eligió un stack compuesto por Prometheus, cAdvisor y Node Exporter, todos corriendo mediante contenedores Docker.
+
+
+2. Objetivo del Monitoreo
+
+El monitoreo permite:
+
+Revisar si los servicios están activos (UP / DOWN).
+
+Medir consumo de CPU, memoria y red de los contenedores.
+
+Observar comportamiento del servidor host donde corre Docker.
+
+Contar con un panel centralizado de métricas.
+
+Detectar problemas antes de que afecten la aplicación.
+
+Aunque el proyecto se despliega de forma local, se mantiene la metodología utilizada en un ambiente real de DevOps.
+
+
+3. Tecnologías Utilizadas
+ Prometheus
+
+        Es el servicio principal que recolecta métricas cada cierto intervalo. Solo almacena información numérica sobre los targets configurados.
+
+ cAdvisor
+
+        Se encarga de exponer métricas específicas de los contenedores Docker, como uso de CPU, memoria y disco.
+
+ Node Exporter
+
+        Recolecta métricas del host de Docker, como utilización del procesador, información de discos y uso de red.
+
+
+4. Configuración del Monitoreo
+
+Toda la configuración se colocó dentro de la carpeta:
+                                                        monitoring/
+
+docker-compose.monitoring.yml
+
+Define los tres servicios del monitoreo (Prometheus, cAdvisor y Node Exporter). Cada uno se ejecuta como un contenedor independiente dentro de una misma red llamada monitor-net.
+
+prometheus.yml
+
+Archivo de configuración donde se especifican los targets o endpoints que Prometheus debe consultar.
+Cada servicio expone sus métricas en un puerto distinto:
+
+Prometheus → 9090
+
+cAdvisor → 8081
+
+Node Exporter → 9100
+
+
+
+
+Puesta en Marcha del Stack de Monitoreo
+
+Para iniciar el monitoreo se utiliza el siguiente comando dentro de la carpeta:
+
+docker compose -f docker-compose.monitoring.yml up -d
+
+Una vez ejecutado, se puede verificar que los contenedores estén activos con:
+
+docker ps
+
+
+
+
+6. Verificación del Funcionamiento
+✔ Prometheus
+
+Se accede mediante el navegador:
+
+http://localhost:9090
+
+Dentro de la sección Status → Targets, todos los servicios deben mostrarse en verde (UP).
+
+✔ cAdvisor
+
+Proporciona una interfaz visual con gráficas de contenedores:
+
+http://localhost:8081
+
+Permite ver el consumo de CPU, memoria, disco y procesos de cada contenedor.
+
+✔ Node Exporter
+
+Expone métricas del servidor host:
+
+http://localhost:9100/metrics
+
+7. Resultado del Monitoreo
+
+Al haber configurado correctamente los endpoints, Prometheus pudo detectar los tres servicios y comenzó a recolectar datos cada 5 segundos.
+Gracias a esto se obtuvieron:
+
+Estados UP de todos los contenedores.
+
+Métricas de uso en tiempo real.
+
+Información completa del host donde corre la aplicación.
+
+Registros de rendimiento que permiten identificar picos de consumo o comportamientos fuera de lo normal.
+
+8. Conclusión
+
+La integración de un sistema de monitoreo, aunque básico, cumple con el propósito de observar el comportamiento de la aplicación durante su ejecución.
+La combinación de Prometheus, cAdvisor y Node Exporter proporciona suficiente información para evaluar el rendimiento del despliegue local y sentar las bases de una arquitectura de observabilidad similar a la que se utiliza en entornos profesionales de DevOps.
+
+Este módulo complementa el proyecto final al demostrar la capacidad de implementar, ejecutar y supervisar servicios de manera estructurada mediante contenedores Docker.
+
+
+Autor Andrei Harov Lev 
+
+

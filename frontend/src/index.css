@@ -1,0 +1,59 @@
+body {
+  background: #131313;
+  color: white;
+  font-family: Arial;
+}
+
+.container {
+  width: 600px;
+  margin: auto;
+  padding-top: 20px;
+}
+
+.formulario input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.formulario button {
+  padding: 10px;
+  width: 100%;
+  background: #0f62fe;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.lista {
+  margin-top: 20px;
+}
+
+.item {
+  background: #1f1f1f;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+.estado {
+  margin: 5px 0;
+  font-weight: bold;
+}
+
+.estado.pendiente {
+  color: yellow;
+}
+
+.estado.completada {
+  color: lightgreen;
+}
+
+.estado.cancelada {
+  color: red;
+}
+
+button.delete {
+  background: red;
+  margin-left: 10px;
+}

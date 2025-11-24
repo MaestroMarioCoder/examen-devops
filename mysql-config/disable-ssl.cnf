@@ -1,0 +1,6 @@
+[mysqld]
+skip_ssl
+skip_tls
+
+[client]
+ssl-mode=DISABLED

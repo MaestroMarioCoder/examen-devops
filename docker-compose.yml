@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+
+  backend:
+    build: ./backend
+    container_name: tareas-backend
+    ports:
+      - "3002:3001"
+    environment:
+      NODE_ENV: docker
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASS: 1191
+      DB_NAME: tareasdb
+    depends_on:
+      - mysql
+    networks:
+      - tareas-net
+
+  frontend:
+    build: ./frontend
+    container_name: tareas-frontend
+    ports:
+      - "3003:3000"
+    depends_on:
+      - backend
+    networks:
+      - tareas-net
+
+  mysql:
+    image: mysql:8
+    container_name: tareas-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "1191"
+      MYSQL_DATABASE: "tareasdb"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3310:3306"
+    networks:
+      - tareas-net
+
+volumes:
+  mysql_data:
+
+networks:
+  tareas-net:

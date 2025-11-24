@@ -1,0 +1,60 @@
+version: "3.9"
+
+networks:
+  tareas-net:
+    driver: bridge
+
+services:
+  tareas-mysql:
+    image: mysql:8
+    container_name: tareas-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1191
+      MYSQL_DATABASE: tareasdb
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p1191"]
+      interval: 3s
+      retries: 5
+      timeout: 3s
+    networks:
+      - tareas-net
+
+  tareas-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    container_name: tareas-backend
+    ports:
+      - "3002:3001"
+    depends_on:
+      tareas-mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: docker
+      DB_HOST: tareas-mysql
+      DB_USER: root
+      DB_PASS: 1191
+      DB_NAME: tareasdb
+    volumes:
+      - ./backend/certs:/app/certs:ro
+    networks:
+      - tareas-net
+
+  tareas-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    container_name: tareas-frontend
+    ports:
+      - "3003:3000"
+    volumes:
+      - ./frontend/certs:/etc/nginx/certs:ro
+    networks:
+      - tareas-net
+
+volumes:
+  mysql_data:

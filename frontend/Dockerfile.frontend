@@ -1,0 +1,39 @@
+# ================================
+#     FASE DE BUILD DE REACT
+# ================================
+FROM node:18-alpine as build
+
+WORKDIR /app
+
+# Copiar dependencias
+COPY package*.json ./
+RUN npm install
+
+# Copiar todo y generar build
+COPY . .
+RUN npm run build
+
+
+# ================================
+#     FASE DE SERVIDOR NGINX
+# ================================
+FROM nginx:alpine
+
+# Crear carpeta de certificados (ya funcionaba, NO se toca)
+RUN mkdir -p /etc/nginx/certs
+
+# Copiar certificados (YA FUNCIONABAN → NO SE TOCAN)
+COPY certs/tareasapp.local.pem /etc/nginx/certs/
+COPY certs/tareasapp.local-key.pem /etc/nginx/certs/
+
+# Copiar configuración de NGINX (YA ADAPTADA ANTES)
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copiar el build del frontend
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Exponer puertos HTTPS y HTTP
+EXPOSE 443
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
